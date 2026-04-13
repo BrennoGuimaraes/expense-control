@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: expensecontrol
+  datasource:
+    url: jdbc:postgresql://localhost:5432/finance_db
+    username: admin
+    password: admin
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
