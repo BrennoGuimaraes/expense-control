@@ -1,6 +1,6 @@
 package com.brenno.expensecontrol.entity;
 
-import enums.TransactionType;
+import com.brenno.expensecontrol.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,8 +29,8 @@ public class Transaction {
     private LocalDateTime date;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Members members;
 
 
 

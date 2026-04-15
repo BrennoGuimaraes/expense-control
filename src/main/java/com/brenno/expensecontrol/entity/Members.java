@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class Members {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,7 +24,7 @@ public class User {
 
     private String password;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "members")
     private List<Transaction> transactions;
 
 }
