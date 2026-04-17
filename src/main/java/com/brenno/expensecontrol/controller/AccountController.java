@@ -28,7 +28,7 @@ public class AccountController {
     @PostMapping
     public ResponseEntity<String> createAccount(@RequestBody AccountRequest accountRequest){
 
-        Account account = accountMapper.accountRequestToAccountEntity(accountRequest);
+        var account = accountMapper.accountRequestToAccountEntity(accountRequest);
 
         accountService.saveAccount(account);
 
@@ -38,7 +38,7 @@ public class AccountController {
     @GetMapping
     public ResponseEntity<List<AccountResponse>> getAccounts(){
 
-        List<AccountResponse> accounts = accountMapper.accountEntityToResponse(accountService.getAccounts());
+        var accounts = accountMapper.accountEntityToResponse(accountService.getAccounts());
 
         return ResponseEntity.ok(accounts);
 

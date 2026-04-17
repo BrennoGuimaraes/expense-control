@@ -32,10 +32,10 @@ public class TransactionService {
     }
 
     public void createTransaction(TransactionRequest transactionRequest){
+        var account = accountService.getAccountById(transactionRequest.idAccount()).orElseThrow(() -> new EntityNotFoundException("Account not found"));
 
-        Account account = accountService.getAccountById(transactionRequest.idAccount()).orElseThrow(() -> new EntityNotFoundException("Account not found"));
+        var transaction = transactionMapper.transactionRequestToTransactionEntity(transactionRequest);
 
-        Transaction transaction = transactionMapper.transactionRequestToTransactionEntity(transactionRequest);
         transaction.setAccount(account);
         transaction.setDate(LocalDateTime.now());
 
