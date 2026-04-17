@@ -1,11 +1,13 @@
 package com.brenno.expensecontrol.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -13,18 +15,17 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Members {
+public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
-    private String email;
+    private BigDecimal balance;
 
-    private String password;
-
-    @OneToMany(mappedBy = "members")
+    @OneToMany(mappedBy = "account")
+    @JsonManagedReference
     private List<Transaction> transactions;
 
 }

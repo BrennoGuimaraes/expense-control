@@ -1,6 +1,7 @@
 package com.brenno.expensecontrol.entity;
 
 import com.brenno.expensecontrol.enums.TransactionType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,8 +30,9 @@ public class Transaction {
     private LocalDateTime date;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Members members;
+    @JoinColumn(name = "account_id")
+    @JsonBackReference
+    private Account account;
 
 
 
