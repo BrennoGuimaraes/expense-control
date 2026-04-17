@@ -13,7 +13,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/members")
+@RequestMapping("/account")
 public class AccountController {
 
     private final AccountMapper accountMapper;

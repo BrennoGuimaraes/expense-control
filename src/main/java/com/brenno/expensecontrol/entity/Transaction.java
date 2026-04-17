@@ -1,5 +1,6 @@
 package com.brenno.expensecontrol.entity;
 
+import com.brenno.expensecontrol.dto.transaction.TransactionRequest;
 import com.brenno.expensecontrol.enums.TransactionType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -33,6 +34,7 @@ public class Transaction {
     @JoinColumn(name = "account_id")
     @JsonBackReference
     private Account account;
+
 
 
 

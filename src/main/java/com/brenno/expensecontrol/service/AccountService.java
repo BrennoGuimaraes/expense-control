@@ -5,6 +5,7 @@ import com.brenno.expensecontrol.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AccountService {
@@ -22,6 +23,9 @@ public class AccountService {
 
     public List<Account> getAccounts(){
         return accountRepository.findAll();
+    }
 
+    public Optional<Account> getAccountById(Long id){
+        return accountRepository.findById(id);
     }
 }

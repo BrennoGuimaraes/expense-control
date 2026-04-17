@@ -1,5 +1,6 @@
 package com.brenno.expensecontrol.entity;
 
+import com.brenno.expensecontrol.dto.transaction.TransactionRequest;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,5 +28,6 @@ public class Account {
     @OneToMany(mappedBy = "account")
     @JsonManagedReference
     private List<Transaction> transactions;
+
 
 }
