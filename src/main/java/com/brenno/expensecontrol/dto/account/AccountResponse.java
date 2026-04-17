@@ -1,4 +1,4 @@
-package com.brenno.expensecontrol.dto;
+package com.brenno.expensecontrol.dto.account;
 
 
 import com.brenno.expensecontrol.entity.Transaction;

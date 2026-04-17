@@ -1,13 +1,12 @@
 package com.brenno.expensecontrol.controller;
 
-import com.brenno.expensecontrol.dto.AccountRequest;
-import com.brenno.expensecontrol.dto.AccountResponse;
+import com.brenno.expensecontrol.dto.account.AccountRequest;
+import com.brenno.expensecontrol.dto.account.AccountResponse;
 import com.brenno.expensecontrol.entity.Account;
-import com.brenno.expensecontrol.mappers.AccountMapper;
+import com.brenno.expensecontrol.mappers.account.AccountMapper;
 import com.brenno.expensecontrol.service.AccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

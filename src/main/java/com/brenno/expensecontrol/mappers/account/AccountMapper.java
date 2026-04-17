@@ -1,7 +1,7 @@
-package com.brenno.expensecontrol.mappers;
+package com.brenno.expensecontrol.mappers.account;
 
-import com.brenno.expensecontrol.dto.AccountRequest;
-import com.brenno.expensecontrol.dto.AccountResponse;
+import com.brenno.expensecontrol.dto.account.AccountRequest;
+import com.brenno.expensecontrol.dto.account.AccountResponse;
 import com.brenno.expensecontrol.entity.Account;
 import org.mapstruct.Mapper;
 
