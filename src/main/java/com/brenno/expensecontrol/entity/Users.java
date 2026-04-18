@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -27,7 +29,14 @@ public class Users implements UserDetails {
 
     private String login;
 
+    private String name;
+
     private String password;
+
+    @Cascade(CascadeType.ALL)
+    @OneToOne
+    @JoinColumn(name = "account_id", unique = true)
+    private Account account;
 
     @Enumerated(EnumType.STRING)
     private UserRoles role;

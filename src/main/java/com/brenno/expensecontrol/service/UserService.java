@@ -1,6 +1,7 @@
 package com.brenno.expensecontrol.service;
 
 import com.brenno.expensecontrol.dto.users.UsersResponse;
+import com.brenno.expensecontrol.entity.Account;
 import com.brenno.expensecontrol.entity.Users;
 import com.brenno.expensecontrol.enums.UserRoles;
 import com.brenno.expensecontrol.repository.UsersRepository;
@@ -14,12 +15,16 @@ public class UserService {
 
     private final UsersRepository usersRepository;
 
+    private final AccountService accountService;
+
         private final PasswordEncoder passwordEncoder;
         private final JwtService jwtService;
         private final AuthenticationManager authenticationManager;
 
-    public UserService(UsersRepository usersRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
+
+    public UserService(UsersRepository usersRepository, AccountService accountService, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
         this.usersRepository = usersRepository;
+        this.accountService = accountService;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
@@ -28,6 +33,8 @@ public class UserService {
     public UsersResponse register(Users users) {
             users.setPassword(passwordEncoder.encode(users.getPassword()));
             users.setRole(UserRoles.USER);
+            users.setName(users.getName());
+            users.setAccount(new Account(null, users.getName(), null, null, null));
             usersRepository.save(users);
             return new UsersResponse(jwtService.generateToken(users));
     }
