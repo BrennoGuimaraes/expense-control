@@ -34,6 +34,7 @@
 | MapStruct | 1.6.0 | DTO mapping |
 | Lombok | — | Boilerplate reduction |
 | SpringDoc OpenAPI | 2.8.5 | Swagger documentation |
+| OpenCSV | 5.9 | CSV parsing & conversion |
 | Docker | — | Containerization |
 
 ---
