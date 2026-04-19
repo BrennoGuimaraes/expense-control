@@ -41,13 +41,7 @@ public class TransactionService {
 
         var transactions = transactionRepository.findByAccountId(user.getId());
 
-        List<TransactionResponse> transactionResponses = new ArrayList<>(Collections.emptyList());
-
-        transactions.forEach(el -> {
-            transactionResponses.add(transactionMapper.trasactionEntityToTransactionResponse(el));
-        });
-
-        return transactionResponses;
+        return transactionMapper.trasactionEntityToTransactionResponse(transactions);
     }
 
     public void createTransaction(TransactionRequest transactionRequest) {
@@ -79,7 +73,6 @@ public class TransactionService {
                 var amount = Double.parseDouble(line[1].trim());
                 var type = line[2].trim();
                 var date = LocalDate.parse(line[3].trim()).atStartOfDay();
-
                 TransactionType category = Arrays.stream(TransactionType.values())
                         .filter(c -> c.getLabel().equals(type))
                         .findFirst()
@@ -111,10 +104,10 @@ public class TransactionService {
         return transactions.stream()
                 .collect(Collectors.groupingBy(TransactionResponse::type, Collectors.counting()))
                 .entrySet().stream()
-                .sorted(Map.Entry.<TransactionType, Long>comparingByValue().reversed())
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
                 .map(entry -> {
                     Double percent = entry.getValue() * 100.0 / total;
-                    String nameType = entry.getKey().getLabel();
+                    String nameType = entry.getKey();
                     return new TypesResponse(percent, nameType);
                 })
                 .collect(Collectors.toList());

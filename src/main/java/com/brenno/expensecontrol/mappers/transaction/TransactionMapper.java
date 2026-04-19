@@ -11,11 +11,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface TransactionMapper {
 
-    @Mapping(source = "account.id", target = "accountId")
     List<TransactionResponse> trasactionEntityToTransactionResponse(List<Transaction> transaction);
-
-    @Mapping(source = "account.id", target = "accountId")
-    TransactionResponse trasactionEntityToTransactionResponse(Transaction transaction);
 
     @Mapping(target = "account", ignore = true)
     @Mapping(target = "date", ignore = true)
