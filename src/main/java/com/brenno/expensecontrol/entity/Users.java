@@ -1,6 +1,7 @@
 package com.brenno.expensecontrol.entity;
 
 import com.brenno.expensecontrol.enums.UserRoles;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,6 +37,7 @@ public class Users implements UserDetails {
     @Cascade(CascadeType.ALL)
     @OneToOne
     @JoinColumn(name = "account_id", unique = true)
+    @JsonBackReference
     private Account account;
 
     @Enumerated(EnumType.STRING)

@@ -1,5 +1,8 @@
 package com.brenno.expensecontrol.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum TransactionType {
     INCOME("Income"),
     TRANSFER("Transfer"),
@@ -22,7 +25,4 @@ public enum TransactionType {
         this.label = label;
     }
 
-    public String getLabel() {
-        return label;
-    }
 }
