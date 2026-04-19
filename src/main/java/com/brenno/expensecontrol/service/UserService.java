@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UsersRepository usersRepository;
-
-
     private final UsersMapper usersMapper;
-
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
