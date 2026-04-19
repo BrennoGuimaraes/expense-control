@@ -2,7 +2,6 @@ package com.brenno.expensecontrol.controller;
 
 import com.brenno.expensecontrol.dto.users.UsersRequest;
 import com.brenno.expensecontrol.dto.users.UsersResponse;
-import com.brenno.expensecontrol.mappers.users.UsersMapper;
 import com.brenno.expensecontrol.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,26 +15,22 @@ public class AuthController {
 
     private final UserService userService;
 
-    private final UsersMapper usersMapper;
 
-    public AuthController(UserService userService, UsersMapper usersMapper) {
+    public AuthController(UserService userService) {
         this.userService = userService;
-        this.usersMapper = usersMapper;
+
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UsersResponse> register(@RequestBody UsersRequest request) {
+    public ResponseEntity<UsersResponse> register(@RequestBody UsersRequest userRequest) {
 
-        var user = usersMapper.usersRequestToUsersEntity(request);
-
-        return ResponseEntity.ok(userService.register(user));
+        return ResponseEntity.ok(userService.register(userRequest));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UsersResponse> login(@RequestBody UsersRequest request) {
-        var user = usersMapper.usersRequestToUsersEntity(request);
+    public ResponseEntity<UsersResponse> login(@RequestBody UsersRequest userRequest) {
 
-        return ResponseEntity.ok(userService.login(user));
+        return ResponseEntity.ok(userService.login(userRequest));
     }
 }
 

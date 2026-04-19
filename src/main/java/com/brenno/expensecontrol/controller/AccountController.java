@@ -2,7 +2,6 @@ package com.brenno.expensecontrol.controller;
 
 import com.brenno.expensecontrol.dto.account.AccountRequest;
 import com.brenno.expensecontrol.dto.account.AccountResponse;
-import com.brenno.expensecontrol.entity.Account;
 import com.brenno.expensecontrol.mappers.account.AccountMapper;
 import com.brenno.expensecontrol.service.AccountService;
 import org.springframework.http.HttpStatus;
@@ -16,21 +15,17 @@ import java.util.List;
 @RequestMapping("/account")
 public class AccountController {
 
-    private final AccountMapper accountMapper;
 
     private final AccountService accountService;
 
-    public AccountController(AccountMapper accountMapper, AccountService accountService) {
-        this.accountMapper = accountMapper;
+    public AccountController(AccountService accountService) {
         this.accountService = accountService;
     }
 
     @PostMapping
     public ResponseEntity<String> createAccount(@RequestBody AccountRequest accountRequest){
 
-        var account = accountMapper.accountRequestToAccountEntity(accountRequest);
-
-        accountService.saveAccount(account);
+        accountService.saveAccount(accountRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Account saved successfully!");
     }
@@ -38,9 +33,7 @@ public class AccountController {
     @GetMapping
     public ResponseEntity<List<AccountResponse>> getAccounts(){
 
-        var accounts = accountMapper.accountEntityToResponse(accountService.getAccounts());
-
-        return ResponseEntity.ok(accounts);
+        return ResponseEntity.ok(accountService.getAccounts());
 
     }
 

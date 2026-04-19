@@ -1,6 +1,9 @@
 package com.brenno.expensecontrol.service;
 
+import com.brenno.expensecontrol.dto.account.AccountRequest;
+import com.brenno.expensecontrol.dto.account.AccountResponse;
 import com.brenno.expensecontrol.entity.Account;
+import com.brenno.expensecontrol.mappers.account.AccountMapper;
 import com.brenno.expensecontrol.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
@@ -12,17 +15,21 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
 
-    public AccountService(AccountRepository accountRepository) {
+    private final AccountMapper accountMapper;
+
+    public AccountService(AccountRepository accountRepository, AccountMapper accountMapper) {
         this.accountRepository = accountRepository;
+        this.accountMapper = accountMapper;
     }
 
-    public void saveAccount(Account account){
+    public void saveAccount(AccountRequest accountRequest){
+        var account = accountMapper.accountRequestToAccountEntity(accountRequest);
         accountRepository.save(account);
 
     }
 
-    public List<Account> getAccounts(){
-        return accountRepository.findAll();
+    public List<AccountResponse> getAccounts(){
+        return accountMapper.accountEntityToResponse(accountRepository.findAll());
     }
 
     public Optional<Account> getAccountById(Long id){

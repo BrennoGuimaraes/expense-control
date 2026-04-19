@@ -30,6 +30,7 @@ public class Account {
     private List<Transaction> transactions;
 
     @OneToOne(mappedBy = "account")
+    @JsonManagedReference
     private Users user;
 
 }

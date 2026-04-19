@@ -2,7 +2,7 @@ package com.brenno.expensecontrol.controller;
 
 import com.brenno.expensecontrol.dto.transaction.TransactionRequest;
 import com.brenno.expensecontrol.dto.transaction.TransactionResponse;
-import com.brenno.expensecontrol.entity.Transaction;
+import com.brenno.expensecontrol.dto.types.TypesResponse;
 import com.brenno.expensecontrol.entity.Users;
 import com.brenno.expensecontrol.mappers.transaction.TransactionMapper;
 import com.brenno.expensecontrol.service.TransactionService;
@@ -21,23 +21,25 @@ public class TransactionController {
 
     private final TransactionService transactionService;
 
-    private final TransactionMapper transactionMapper;
 
     public TransactionController(TransactionService transactionService, TransactionMapper transactionMapper) {
         this.transactionService = transactionService;
-        this.transactionMapper = transactionMapper;
+    }
+
+    @GetMapping("types-percent")
+    public ResponseEntity<List<TypesResponse>> getTypesWithPercernt(@AuthenticationPrincipal Users user) {
+
+        return ResponseEntity.ok(transactionService.getTransactionTypes(user));
     }
 
     @GetMapping
-    public ResponseEntity<List<TransactionResponse>> getTransactions(){
+    public ResponseEntity<List<TransactionResponse>> getTransactions(@AuthenticationPrincipal Users user) {
 
-        var transactionResponse = transactionMapper.trasactionEntityToTransactionResponse(transactionService.getTransactions());
-
-        return ResponseEntity.ok(transactionResponse);
+        return ResponseEntity.ok(transactionService.getTransactions(user));
     }
 
     @PostMapping
-    public ResponseEntity<?> createTransaction(@RequestBody TransactionRequest transactionRequest){
+    public ResponseEntity<?> createTransaction(@RequestBody TransactionRequest transactionRequest) {
 
         transactionService.createTransaction(transactionRequest);
 
@@ -59,4 +61,4 @@ public class TransactionController {
         transactionService.importCsv(file, user.getAccount().getId());
         return ResponseEntity.status(HttpStatus.CREATED).body("CSV imported successfully!");
     }
-    }
+}
