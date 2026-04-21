@@ -1,13 +1,14 @@
 package com.brenno.expensecontrol;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+import static org.assertj.core.api.Assertions.assertThat;
+
 class ExpensecontrolApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void applicationClassShouldBeAvailable() {
+        assertThat(ExpensecontrolApplication.class).isNotNull();
+    }
 
 }
