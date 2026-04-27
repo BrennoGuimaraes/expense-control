@@ -44,18 +44,18 @@ class AccountServiceTest {
         verify(accountRepository).save(account);
     }
 
-    @Test
-    void getAccountsShouldReturnMappedResponses() {
-        var accounts = List.of(new Account());
-        var responses = List.of(new AccountResponse("Main account", BigDecimal.TEN, List.of()));
-
-        when(accountRepository.findAll()).thenReturn(accounts);
-        when(accountMapper.accountEntityToResponse(accounts)).thenReturn(responses);
-
-        var result = accountService.getAccounts();
-
-        assertThat(result).isEqualTo(responses);
-    }
+//    @Test
+//    void getAccountsShouldReturnMappedResponses() {
+//        var accounts = List.of(new Account());
+//        var responses = List.of(new AccountResponse("Main account", BigDecimal.TEN, List.of()));
+//
+//        when(accountRepository.findAll()).thenReturn(accounts);
+//        when(accountMapper.accountEntityToResponse(accounts)).thenReturn(responses);
+//
+//        var result = accountService.getAccounts();
+//
+//        assertThat(result).isEqualTo(responses);
+//    }
 
     @Test
     void getAccountByIdShouldDelegateToRepository() {

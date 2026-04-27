@@ -1,11 +1,10 @@
 package com.brenno.expensecontrol.controller;
 
+import com.brenno.expensecontrol.dto.categories.CategoriesResponseWithPercent;
 import com.brenno.expensecontrol.dto.transaction.TransactionRequest;
 import com.brenno.expensecontrol.dto.transaction.TransactionResponse;
-import com.brenno.expensecontrol.dto.types.TypesResponse;
 import com.brenno.expensecontrol.entity.Account;
 import com.brenno.expensecontrol.entity.Users;
-import com.brenno.expensecontrol.enums.TransactionType;
 import com.brenno.expensecontrol.enums.UserRoles;
 import com.brenno.expensecontrol.mappers.transaction.TransactionMapper;
 import com.brenno.expensecontrol.service.TransactionService;
@@ -19,11 +18,11 @@ import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -31,12 +30,8 @@ import java.util.List;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class TransactionControllerTest {
@@ -58,17 +53,17 @@ class TransactionControllerTest {
     }
 
     @Test
-    void getTypesPercentShouldReturnServiceResponse() throws Exception {
+    void getCategoriesPercentShouldReturnServiceResponse() throws Exception {
         var user = authenticatedUser();
 
-        when(transactionService.getTransactionTypes(user)).thenReturn(List.of(
-                new TypesResponse(60.0, "FOOD_AND_DRINK")
+        when(transactionService.getTransactionCategoriesWithPercent(user)).thenReturn(List.of(
+                categoriesResponseWithPercent(60.0, "Food & Drink")
         ));
 
-        mockMvc.perform(get("/transaction/types-percent").requestAttr("authenticatedUser", user))
+        mockMvc.perform(get("/transaction/categories-percent").requestAttr("authenticatedUser", user))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].percent").value(60.0))
-                .andExpect(jsonPath("$[0].nameType").value("FOOD_AND_DRINK"));
+                .andExpect(jsonPath("$[0].category").value("Food & Drink"));
     }
 
     @Test
@@ -76,25 +71,25 @@ class TransactionControllerTest {
         var user = authenticatedUser();
 
         when(transactionService.getTransactions(user)).thenReturn(List.of(
-                new TransactionResponse("Lunch", 20.0, "FOOD_AND_DRINK", LocalDateTime.of(2026, 4, 20, 12, 0))
+                transactionResponse("Lunch", 20.0, "Food & Drink")
         ));
 
         mockMvc.perform(get("/transaction").requestAttr("authenticatedUser", user))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].description").value("Lunch"))
                 .andExpect(jsonPath("$[0].amount").value(20.0))
-                .andExpect(jsonPath("$[0].type").value("FOOD_AND_DRINK"));
+                .andExpect(jsonPath("$[0].category").value("Food & Drink"));
     }
 
     @Test
     void createTransactionShouldReturnCreated() throws Exception {
-        var request = new TransactionRequest("Salary", 1500.0, TransactionType.INCOME, 5L);
+        var request = transactionRequest(5L);
 
         mockMvc.perform(post("/transaction")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(content().string("Account saved successfully!"));
+                .andExpect(content().string("Transaction saved successfully!"));
 
         verify(transactionService).createTransaction(request);
     }
@@ -138,6 +133,18 @@ class TransactionControllerTest {
     private Users authenticatedUser() {
         var account = new Account(11L, "Main account", BigDecimal.ZERO, List.of(), null);
         return new Users(1L, "brenno", "Brenno", "secret", account, UserRoles.USER);
+    }
+
+    private TransactionRequest transactionRequest(Long accountId) {
+        return new TransactionRequest("Salary", 1500.0, 8L, accountId);
+    }
+
+    private TransactionResponse transactionResponse(String description, Double amount, String category) {
+        return new TransactionResponse(description, amount, category, LocalDateTime.of(2026, 4, 20, 12, 0));
+    }
+
+    private CategoriesResponseWithPercent categoriesResponseWithPercent(Double percent, String category) {
+        return new CategoriesResponseWithPercent(percent, category);
     }
 
     private static final class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentResolver {

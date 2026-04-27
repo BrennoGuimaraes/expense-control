@@ -1,7 +1,5 @@
 package com.brenno.expensecontrol.dto.transaction;
 
-import com.brenno.expensecontrol.enums.TransactionType;
 
-
-public record TransactionRequest(String description, Double amount, TransactionType type, Long idAccount) {
+public record TransactionRequest(String description, Double amount, Long idCategory, Long idAccount) {
 }

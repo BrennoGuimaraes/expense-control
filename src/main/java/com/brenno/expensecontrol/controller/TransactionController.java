@@ -1,8 +1,8 @@
 package com.brenno.expensecontrol.controller;
 
+import com.brenno.expensecontrol.dto.categories.CategoriesResponseWithPercent;
 import com.brenno.expensecontrol.dto.transaction.TransactionRequest;
 import com.brenno.expensecontrol.dto.transaction.TransactionResponse;
-import com.brenno.expensecontrol.dto.types.TypesResponse;
 import com.brenno.expensecontrol.entity.Users;
 import com.brenno.expensecontrol.mappers.transaction.TransactionMapper;
 import com.brenno.expensecontrol.service.TransactionService;
@@ -26,10 +26,10 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    @GetMapping("types-percent")
-    public ResponseEntity<List<TypesResponse>> getTypesWithPercernt(@AuthenticationPrincipal Users user) {
+    @GetMapping("categories-percent")
+    public ResponseEntity<List<CategoriesResponseWithPercent>> getCategoriesWithPercernt(@AuthenticationPrincipal Users user) {
 
-        return ResponseEntity.ok(transactionService.getTransactionTypes(user));
+        return ResponseEntity.ok(transactionService.getTransactionCategoriesWithPercent(user));
     }
 
     @GetMapping
@@ -43,7 +43,7 @@ public class TransactionController {
 
         transactionService.createTransaction(transactionRequest);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Account saved successfully!");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Transaction saved successfully!");
     }
 
 

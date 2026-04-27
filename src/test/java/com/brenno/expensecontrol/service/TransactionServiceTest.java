@@ -2,10 +2,10 @@ package com.brenno.expensecontrol.service;
 
 import com.brenno.expensecontrol.dto.transaction.TransactionRequest;
 import com.brenno.expensecontrol.dto.transaction.TransactionResponse;
-import com.brenno.expensecontrol.entity.Account;
+import com.brenno.expensecontrol.entity.Categories;
 import com.brenno.expensecontrol.entity.Transaction;
 import com.brenno.expensecontrol.entity.Users;
-import com.brenno.expensecontrol.enums.TransactionType;
+import com.brenno.expensecontrol.entity.Account;
 import com.brenno.expensecontrol.mappers.transaction.TransactionMapper;
 import com.brenno.expensecontrol.repository.TransactionRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -38,15 +38,17 @@ class TransactionServiceTest {
     @Mock
     private TransactionMapper transactionMapper;
 
+    @Mock
+    private CategoriesService categoriesService;
+
     @InjectMocks
     private TransactionService transactionService;
 
     @Test
     void getTransactionsShouldMapRepositoryResult() {
-        var user = new Users();
-        user.setId(7L);
+        var user = userWithId(7L);
         var transactions = List.of(new Transaction());
-        var responses = List.of(new TransactionResponse("Lunch", 20.0, "FOOD_AND_DRINK", LocalDateTime.now()));
+        var responses = List.of(transactionResponse("Lunch", 20.0, "Food & Drink"));
 
         when(transactionRepository.findByAccountId(7L)).thenReturn(transactions);
         when(transactionMapper.trasactionEntityToTransactionResponse(transactions)).thenReturn(responses);
@@ -58,12 +60,13 @@ class TransactionServiceTest {
 
     @Test
     void createTransactionShouldAttachAccountAndPersist() {
-        var request = new TransactionRequest("Salary", 1500.0, TransactionType.INCOME, 3L);
-        var account = new Account();
-        account.setId(3L);
+        var request = transactionRequest(3L);
+        var account = accountWithId(3L);
+        var category = category(8L, "Income");
         var transaction = new Transaction();
 
         when(accountService.getAccountById(3L)).thenReturn(Optional.of(account));
+        when(categoriesService.getCategoriesById(8L)).thenReturn(category);
         when(transactionMapper.transactionRequestToTransactionEntity(request)).thenReturn(transaction);
 
         transactionService.createTransaction(request);
@@ -71,12 +74,13 @@ class TransactionServiceTest {
         var captor = ArgumentCaptor.forClass(Transaction.class);
         verify(transactionRepository).save(captor.capture());
         assertThat(captor.getValue().getAccount()).isEqualTo(account);
+        assertThat(captor.getValue().getCategory()).isEqualTo(category);
         assertThat(captor.getValue().getDate()).isNotNull();
     }
 
     @Test
     void createTransactionShouldThrowWhenAccountDoesNotExist() {
-        var request = new TransactionRequest("Salary", 1500.0, TransactionType.INCOME, 3L);
+        var request = transactionRequest(3L);
 
         when(accountService.getAccountById(3L)).thenReturn(Optional.empty());
 
@@ -87,12 +91,13 @@ class TransactionServiceTest {
 
     @Test
     void importCsvShouldParseAndSaveTransactions() {
-        var csvContent = """
+        var file = csvFile("""
                 description,amount,type,date
                 Market,55.4,Groceries,2026-04-20
                 Fuel,100.0,Gas & Fuel,2026-04-19
-                """;
-        var file = new MockMultipartFile("file", "transactions.csv", "text/csv", csvContent.getBytes());
+                """);
+        when(categoriesService.getCategoriesByLabel("Groceries")).thenReturn(category(1L, "Groceries"));
+        when(categoriesService.getCategoriesByLabel("Gas & Fuel")).thenReturn(category(2L, "Gas & Fuel"));
 
         transactionService.importCsv(file, 9L);
 
@@ -101,17 +106,16 @@ class TransactionServiceTest {
         assertThat(captor.getValue()).hasSize(2);
         var firstTransaction = (Transaction) captor.getValue().getFirst();
         assertThat(firstTransaction.getDescription()).isEqualTo("Market");
-        assertThat(firstTransaction.getType()).isEqualTo(TransactionType.GROCERIES);
+        assertThat(firstTransaction.getCategory().getLabel()).isEqualTo("Groceries");
         assertThat(firstTransaction.getAccount().getId()).isEqualTo(9L);
     }
 
     @Test
     void importCsvShouldWrapParsingErrors() {
-        var csvContent = """
+        var file = csvFile("""
                 description,amount,type,date
                 Invalid,abc,Groceries,2026-04-20
-                """;
-        var file = new MockMultipartFile("file", "transactions.csv", "text/csv", csvContent.getBytes());
+                """);
 
         assertThatThrownBy(() -> transactionService.importCsv(file, 9L))
                 .isInstanceOf(RuntimeException.class)
@@ -119,35 +123,73 @@ class TransactionServiceTest {
     }
 
     @Test
-    void getTransactionTypesShouldReturnPercentagesSortedByFrequency() {
-        var user = new Users();
+    void getTransactionCategoriesWithPercentShouldReturnPercentagesSortedByFrequency() {
+        var user = userWithAccountId(10L);
+        var food = category(1L, "Food & Drink");
+        var fuel = category(2L, "Gas & Fuel");
         var transactions = List.of(
-                new TransactionResponse("Lunch", 20.0, "FOOD_AND_DRINK", LocalDateTime.now()),
-                new TransactionResponse("Dinner", 30.0, "FOOD_AND_DRINK", LocalDateTime.now()),
-                new TransactionResponse("Fuel", 50.0, "GAS_AND_FUEL", LocalDateTime.now())
+                transaction(1L, "Lunch", 20.0, food),
+                transaction(2L, "Dinner", 30.0, food),
+                transaction(3L, "Fuel", 50.0, fuel)
         );
 
-        when(transactionRepository.findByAccountId(null)).thenReturn(List.of());
-        when(transactionMapper.trasactionEntityToTransactionResponse(List.of())).thenReturn(transactions);
+        when(transactionRepository.findByAccountId(10L)).thenReturn(transactions);
 
-        var result = transactionService.getTransactionTypes(user);
+        var result = transactionService.getTransactionCategoriesWithPercent(user);
 
         assertThat(result).hasSize(2);
-        assertThat(result.getFirst().nameType()).isEqualTo("FOOD_AND_DRINK");
+        assertThat(result.getFirst().category()).isEqualTo("Food & Drink");
         assertThat(result.getFirst().percent()).isEqualTo(66.66666666666667);
-        assertThat(result.get(1).nameType()).isEqualTo("GAS_AND_FUEL");
+        assertThat(result.get(1).category()).isEqualTo("Gas & Fuel");
         assertThat(result.get(1).percent()).isEqualTo(33.333333333333336);
     }
 
     @Test
-    void getTransactionTypesShouldReturnEmptyListWhenThereAreNoTransactions() {
-        var user = new Users();
+    void getTransactionCategoriesWithPercentShouldReturnEmptyListWhenThereAreNoTransactions() {
+        var user = userWithAccountId(10L);
 
-        when(transactionRepository.findByAccountId(null)).thenReturn(List.of());
-        when(transactionMapper.trasactionEntityToTransactionResponse(List.of())).thenReturn(List.of());
+        when(transactionRepository.findByAccountId(10L)).thenReturn(List.of());
 
-        var result = transactionService.getTransactionTypes(user);
+        var result = transactionService.getTransactionCategoriesWithPercent(user);
 
         assertThat(result).isEmpty();
+    }
+
+    private TransactionRequest transactionRequest(Long accountId) {
+        return new TransactionRequest("Salary", 1500.0, 8L, accountId);
+    }
+
+    private TransactionResponse transactionResponse(String description, Double amount, String category) {
+        return new TransactionResponse(description, amount, category, LocalDateTime.now());
+    }
+
+    private Transaction transaction(Long id, String description, Double amount, Categories category) {
+        return new Transaction(id, description, amount, LocalDateTime.now(), null, category);
+    }
+
+    private Categories category(Long id, String label) {
+        return new Categories(id, label);
+    }
+
+    private Account accountWithId(Long id) {
+        var account = new Account();
+        account.setId(id);
+        return account;
+    }
+
+    private Users userWithId(Long id) {
+        var user = new Users();
+        user.setId(id);
+        return user;
+    }
+
+    private Users userWithAccountId(Long accountId) {
+        var user = new Users();
+        user.setAccount(accountWithId(accountId));
+        return user;
+    }
+
+    private MockMultipartFile csvFile(String content) {
+        return new MockMultipartFile("file", "transactions.csv", "text/csv", content.getBytes());
     }
 }

@@ -1,14 +1,12 @@
 package com.brenno.expensecontrol.repository;
 
-import com.brenno.expensecontrol.entity.Users;
+import com.brenno.expensecontrol.entity.Categories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UsersRepository extends JpaRepository<Users, Long> {
-
-    Optional<Users> findByLogin(String login);
-
+public interface CategoriesRepository extends JpaRepository<Categories, Long> {
+    Optional<Categories> findByLabel(String label);
 }
