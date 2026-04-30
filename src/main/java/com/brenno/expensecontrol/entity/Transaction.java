@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,7 +22,7 @@ public class Transaction {
 
     private String description;
 
-    private Double amount;
+    private BigDecimal amount;
 
     private LocalDateTime date;
 

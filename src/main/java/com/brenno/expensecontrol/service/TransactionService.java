@@ -16,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -77,7 +79,7 @@ public class TransactionService {
             String[] line;
             while ((line = csv.readNext()) != null) {
                 var description = line[0].trim();
-                var amount = Double.parseDouble(line[1].trim());
+                var amount = new BigDecimal(line[1].trim().replace(",", ".")).setScale(2, RoundingMode.HALF_UP);
                 var type = line[2].trim();
                 var date = LocalDate.parse(line[3].trim()).atStartOfDay();
 

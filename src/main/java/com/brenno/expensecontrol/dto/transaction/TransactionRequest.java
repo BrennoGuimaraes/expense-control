@@ -1,5 +1,7 @@
 package com.brenno.expensecontrol.dto.transaction;
 
 
-public record TransactionRequest(String description, Double amount, Long idCategory, Long idAccount) {
+import java.math.BigDecimal;
+
+public record TransactionRequest(String description, BigDecimal amount, Long idCategory, Long idAccount) {
 }
