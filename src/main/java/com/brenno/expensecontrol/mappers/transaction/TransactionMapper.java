@@ -13,7 +13,11 @@ public interface TransactionMapper {
 
     List<TransactionResponse> trasactionEntityToTransactionResponse(List<Transaction> transaction);
 
+    @Mapping(target = "category", source = "category.label")
+    TransactionResponse transactionEntityToTransactionResponse(Transaction transaction);
+
     @Mapping(target = "account", ignore = true)
+    @Mapping(target = "category", ignore = true)
     @Mapping(target = "date", ignore = true)
     Transaction transactionRequestToTransactionEntity(TransactionRequest transactionRequest);
 }

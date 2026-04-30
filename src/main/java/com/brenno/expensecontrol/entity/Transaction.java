@@ -1,7 +1,5 @@
 package com.brenno.expensecontrol.entity;
 
-import com.brenno.expensecontrol.dto.transaction.TransactionRequest;
-import com.brenno.expensecontrol.enums.TransactionType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,10 +22,7 @@ public class Transaction {
 
     private String description;
 
-    private Double amount;
-
-    @Enumerated(EnumType.STRING)
-    private TransactionType type;
+    private BigDecimal amount;
 
     private LocalDateTime date;
 
@@ -35,7 +31,7 @@ public class Transaction {
     @JsonBackReference
     private Account account;
 
-
-
-
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Categories category;
 }

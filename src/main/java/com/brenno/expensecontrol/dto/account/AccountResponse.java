@@ -2,10 +2,9 @@ package com.brenno.expensecontrol.dto.account;
 
 
 import com.brenno.expensecontrol.dto.transaction.TransactionResponse;
-import com.brenno.expensecontrol.entity.Transaction;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-public record AccountResponse(String nome, BigDecimal balance ,  List<TransactionResponse> transactions ) {
+public record AccountResponse(String nome, BigDecimal balance , List<TransactionResponse> transactions ) {
 }
